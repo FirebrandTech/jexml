@@ -1,0 +1,24 @@
+{
+  "first_name": "John",
+  "last_name": "Doe",
+  "email": "johndoe@email.com",
+  "start_year": 2020,
+  "address": {
+    "street": "123 Main St",
+    "city": "Springfield",
+    "state": "IL",
+    "zip": "62701"
+  },
+  "contacts": [
+    {
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "email": "janedoe@email.com"
+    },
+    {
+      "first_name": "Jim",
+      "last_name": "Doe",
+      "email": "jimdoe@email.com"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "target": "esnext",
+    "allowSyntheticDefaultImports": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "declaration": true,
+    "types": ["node", "jest"],
+    "rootDir": "./"
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "ts-node": {
+    "transpileOnly": true
+  },
+  "resolve": {
+    "extensions": [".ts", ".js", ".json"]
+  }
+}

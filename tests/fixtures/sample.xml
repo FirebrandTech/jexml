@@ -1,0 +1,26 @@
+<Record>
+  <DistributionID>s123456</DistributionID>
+  <FirstName>John</FirstName>
+  <LastName>Doe</LastName>
+  <FullName>John Doe</FullName>
+  <Age>30</Age>
+  <Company>
+    <Company type="Corporation">Acme Inc</Company>
+  </Company>
+  <Address>
+    <Street>123 Main St</Street>
+    <City>Springfield</City>
+    <State>IL</State>
+    <Zip>62701</Zip>
+  </Address>
+  <Friends>
+    <Friend>
+      <FirstName>Jane</FirstName>
+      <LastName>Doe</LastName>
+    </Friend>
+    <Friend>
+      <FirstName>John</FirstName>
+      <LastName>Smith</LastName>
+    </Friend>
+  </Friends>
+</Record>

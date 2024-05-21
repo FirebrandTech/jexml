@@ -1,0 +1,22 @@
+# prettier-ignore
+root: Person
+elements:
+  DistributionID: value(s123456)
+  FirstName: first_name
+  LastName: last_name
+  FullName: first_name + ' ' + last_name
+  Company:
+    value: company.name
+    attributes:
+      type: company.type
+  Address:
+    Street: address.street
+    City: address.city
+    State: address.state
+    Zip: address.zip
+  Contacts[]:
+    as: Contact
+    from: contacts
+    elements:
+      FirstName: first_name
+      LastName: last_name
