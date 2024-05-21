@@ -113,4 +113,32 @@ describe('Jexml', () => {
     expect(xml).toContain('<FirstName>Jane</FirstName>');
     expect(xml).toContain('<LastName>Doe</LastName>');
   });
+  it('should stream xml when called with stream() method', (done) => {
+    const config = `
+    root: Record
+    elements:
+      FirstName: first_name
+      LastName: last_name
+    `;
+    const jexml = new Jexml({
+      templateString: config,
+    });
+    const stream = jexml.stream({
+      documentOpen: '<People>',
+      documentClose: '</People>',
+    });
+    let xml = '';
+    stream.on('data', (chunk) => {
+      xml += chunk;
+    });
+    stream.on('end', () => {
+      expect(xml).toContain('<Record>');
+      expect(xml).toContain('<FirstName>John</FirstName>');
+      expect(xml).toContain('<LastName>Doe</LastName>');
+      console.log(xml);
+      done();
+    });
+    stream.write(fixture);
+    stream.end();
+  });
 });

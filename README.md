@@ -1,4 +1,4 @@
-# JeXML
+# Jexml
 
 Create XML output from JSON data using YAML templates.
 
@@ -26,6 +26,30 @@ const jexml = new Jexml({ templatePath: pathToTemplate });
 
 // Convert JSON data to XML
 jexml.convert(/* JSON data */);
+```
+
+## Streams
+
+Jexml supports streaming data to the XML output. The `stream` method
+returns a `Transform` stream that can be piped to a `Writable` stream.
+
+```typescript
+import { Jexml } from '@firebrandtech/jexml';
+import { createReadStream, createWriteStream } from 'fs';
+
+const jexml = new Jexml({ templatePath: 'path/to/template.yaml' });
+
+const readStream = createReadStream('path/to/data.json');
+const writeStream = createWriteStream('path/to/output.xml');
+
+readStream
+  .pipe(
+    jexml.stream({
+      documentOpen: '<People>', // or array: ['<?xml version="1.0" encoding="UTF-8" ?>', '<People>']
+      documentClose: '</People>', // or array: ['</People>']
+    })
+  )
+  .pipe(writeStream);
 ```
 
 ## Template Syntax

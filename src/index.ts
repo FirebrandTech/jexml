@@ -1,6 +1,7 @@
 import { parse } from 'yaml';
 import * as fs from 'fs';
 import jexl from 'jexl';
+import { Transform, TransformCallback } from 'stream';
 
 type Primitive = boolean | number | string | undefined;
 
@@ -140,5 +141,45 @@ export class Jexml {
   public convert(context: Context): string {
     const xml = `<${this.template.root}>${this.parseObject(this.template.elements, context)}</${this.template.root}>`;
     return this.formatSpacing ? this.formatXml(xml) : xml;
+  }
+
+  public stream(opts: StreamOptions): JexmlTransformStream {
+    return new JexmlTransformStream(this, opts);
+  }
+}
+
+interface StreamOptions {
+  documentOpen?: string | string[];
+  documentClose?: string | string[];
+}
+
+class JexmlTransformStream extends Transform {
+  private jexml: Jexml;
+  private isFirstChunk: boolean = true;
+  private options: StreamOptions;
+
+  constructor(jexml: Jexml, options?: StreamOptions) {
+    super({ objectMode: true });
+    this.jexml = jexml;
+    this.options = options;
+  }
+
+  _transform(chunk: any, encoding: string, callback: TransformCallback) {
+    if (this.isFirstChunk) {
+      Array.isArray(this.options.documentOpen)
+        ? this.options.documentOpen.forEach((head) => this.push(head))
+        : this.push(this.options.documentOpen || '');
+      this.isFirstChunk = false;
+    }
+    const xml = this.jexml.convert(chunk);
+    this.push(xml);
+    callback();
+  }
+
+  _final(callback: (error?: Error) => void): void {
+    Array.isArray(this.options.documentClose)
+      ? this.options.documentClose.forEach((tail) => this.push(tail))
+      : this.push(this.options.documentClose || '');
+    callback();
   }
 }
