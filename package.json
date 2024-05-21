@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/FirebrandTech/jexml.git"
@@ -14,7 +17,7 @@
     "test:watch": "jest --watchAll",
     "example": "ts-node tests/fixtures/example.ts",
     "build": "esbuild src/index.ts --bundle --minify --platform=node --outfile=index.js --sourcemap",
-    "build:types": "tsc src/index.ts --emitDeclarationOnly --declaration --outdir types",
+    "build:types": "tsc src/index.ts --esModuleInterop --emitDeclarationOnly --declaration --outdir types",
     "prepublish": "yarn build && yarn build:types"
   },
   "prettier": {
