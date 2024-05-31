@@ -9,6 +9,7 @@ type Config = {
   templatePath?: string;
   templateString?: string;
   formatSpacing?: number | string;
+  ignoreUndefined?: boolean;
 };
 type Context = Record<string, any>;
 type Node = Record<string, any>;
@@ -20,6 +21,7 @@ interface Template {
 export class Jexml {
   private template: Template;
   private formatSpacing: number | string;
+  private ignoreUndefined: boolean;
 
   constructor(config: Config) {
     const tmpl = config.templatePath
@@ -27,14 +29,16 @@ export class Jexml {
       : config.templateString;
     this.template = parse(tmpl);
     this.formatSpacing = config.formatSpacing;
+    this.ignoreUndefined = config.ignoreUndefined === true ? false : true;
   }
 
   // Abstract the creation of XML elements
   private createXMLElements(key: string, value: any, attributes?: any) {
     // Check if the key is an array indicator and remove it
     const elementKey = key.endsWith('[]') ? key.slice(0, -2) : key;
+    if (this.ignoreUndefined && value === undefined) return '';
     return attributes
-      ? `<${elementKey} ${attributes}>${value}</${elementKey}>`
+      ? `<${elementKey} ${attributes}>${value !== undefined ? value : ''}</${elementKey}>`
       : `<${elementKey}>${value}</${elementKey}>`;
   }
 
@@ -158,6 +162,8 @@ class JexmlTransformStream extends Transform {
   private isFirstChunk: boolean = true;
   private options: StreamOptions;
 
+  i = 0;
+
   constructor(jexml: Jexml, options?: StreamOptions) {
     super({ objectMode: true });
     this.jexml = jexml;
@@ -171,8 +177,16 @@ class JexmlTransformStream extends Transform {
         : this.push(this.options.documentOpen || '');
       this.isFirstChunk = false;
     }
-    const xml = this.jexml.convert(chunk);
-    this.push(xml);
+    let xml;
+    if (Array.isArray(chunk)) {
+      for (let i = 0; i < chunk.length; i++) {
+        xml = this.jexml.convert(chunk[i]);
+        this.push(xml);
+      }
+    } else {
+      xml = this.jexml.convert(chunk);
+      this.push(xml);
+    }
     callback();
   }
 

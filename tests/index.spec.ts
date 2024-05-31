@@ -135,7 +135,6 @@ describe('Jexml', () => {
       expect(xml).toContain('<Record>');
       expect(xml).toContain('<FirstName>John</FirstName>');
       expect(xml).toContain('<LastName>Doe</LastName>');
-      console.log(xml);
       done();
     });
     stream.write(fixture);
