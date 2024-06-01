@@ -94,6 +94,26 @@ describe('Jexml', () => {
     }).convert(fixture);
     expect(xml).toContain('<FirstName id="1">John</FirstName>');
   });
+  it('should support conditional elements', () => {
+    const config = `
+    root: Record
+    elements:
+      CompanyMatch:
+        condition: company.name == 'Acme Inc'
+        elements:
+          NameMatched: company.name
+      CompanyNoMatch:
+        condition: company.name != 'Acme Inc'
+        elements:
+          NameNotMatched: company.name
+    `;
+    const xml = new Jexml({
+      templateString: config,
+    }).convert(fixture);
+    expect(xml).toContain('<CompanyMatch>');
+    expect(xml).toContain('<NameMatched>Acme Inc</NameMatched>');
+    expect(xml).not.toContain('<CompanyNoMatch>');
+  });
   it('should support array elements', () => {
     const config = `
     root: Record

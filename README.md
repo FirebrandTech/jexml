@@ -135,8 +135,6 @@ To define attributes of an element, use the following syntax:
 
 ```yaml
 elements:
-  # Define an element with an attribute by specifying the
-  # value and attributes keys
   ContactInformaiton:
     value: preferred_contact_value
     attributes:
@@ -149,7 +147,52 @@ The output of the aboved YAML template will be:
 <ContactInformation type="email">jsmith@email.com</ContactInformation>
 ```
 
+### Conditional Elements
+
+Jexml supports standard conditional logic using the Jexl syntax inline for elements, for example:
+
+```yaml
+elements:
+  IsAdmin: type === 'admin' # Boolean
+  Role: type === 'admin' ? 'Administrator' : 'User' # Ternary
+```
+
+The output of the above YAML template will be:
+
+```xml
+<IsAdmin>true</IsAdmin>
+<Role>Administrator</Role>
+```
+
+To define conditional elements structures, use the following syntax, specifying the condition key with a Jexl expression and the elements key with the child elements:
+
+```yaml
+elements:
+  Permissions:
+    condition: type === 'admin' # Jexl condition syntax
+    elements:
+      ReadAccess: true
+      WriteAccess: true
+```
+
+The output of the above YAML template will be:
+
+```xml
+<Permissions>
+  <ReadAccess>true</ReadAccess>
+  <WriteAccess>true</WriteAccess>
+</Permissions>
+```
+
 ### Arrays
+
+Jexml supports all Jexl array functions and methods for defining arrays of elements.
+
+```yaml
+FavoriteColor: colors[0] # Probably their favorite since it's first
+```
+
+Additionally, array output can be defined using the suffix `[]` for the key along with `elements` key with the `as` and `from` keys to define the array element name and the array reference, respectively.
 
 Given the following JSON data:
 
