@@ -35,7 +35,7 @@ describe('Jexml', () => {
     expect(xml).toContain('<FirstName>John</FirstName>');
     expect(xml).toContain('<LastName>Doe</LastName>');
   });
-  it('should be replace value() with literal', () => {
+  it('should replace value() with literal', () => {
     const config = `
     root: Record
     elements:
@@ -112,6 +112,51 @@ describe('Jexml', () => {
     expect(xml).toContain('<Friends>');
     expect(xml).toContain('<FirstName>Jane</FirstName>');
     expect(xml).toContain('<LastName>Doe</LastName>');
+  });
+  it('should support ability to add custom functions', () => {
+    const config = `
+    root: Record
+    elements:
+      FullName: concat(first_name, " ", last_name)
+    `;
+    const xml = new Jexml({
+      templateString: config,
+      functions: {
+        concat: (...args) => args.join(''),
+      },
+    }).convert(fixture);
+    expect(xml).toContain('<FullName>John Doe</FullName>');
+  });
+  it('should support ability to add custom transforms', () => {
+    const config = `
+    root: Record
+    elements:
+      Age: age|double
+    `;
+    const xml = new Jexml({
+      templateString: config,
+      tranforms: {
+        double: (value) => value * 2,
+      },
+    }).convert(fixture);
+    expect(xml).toContain('<Age>60</Age>');
+  });
+  it('should support ability to add custom binary operators', () => {
+    const config = `
+    root: Record
+    elements:
+      Age: age add 10
+    `;
+    const xml = new Jexml({
+      templateString: config,
+      binaryOps: {
+        add: {
+          precedence: 10,
+          fn: (left, right) => left + right,
+        },
+      },
+    }).convert(fixture);
+    expect(xml).toContain('<Age>40</Age>');
   });
   it('should stream xml when called with stream() method', (done) => {
     const config = `

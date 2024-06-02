@@ -10,6 +10,15 @@ type Config = {
   templateString?: string;
   formatSpacing?: number | string;
   ignoreUndefined?: boolean;
+  tranforms?: Record<string, (value: any, ...args: any[]) => any>;
+  functions?: Record<string, (value: any, ...args: any[]) => any>;
+  binaryOps?: Record<
+    string,
+    {
+      precedence: number;
+      fn: (left: any, right: any) => any;
+    }
+  >;
 };
 type Context = Record<string, any>;
 type Node = Record<string, any>;
@@ -30,6 +39,31 @@ export class Jexml {
     this.template = parse(tmpl);
     this.formatSpacing = config.formatSpacing;
     this.ignoreUndefined = config.ignoreUndefined === true ? false : true;
+
+    // Add custom functions to Jexl
+    if (config.functions) {
+      for (const fn in config.functions) {
+        jexl.addFunction(fn, config.functions[fn]);
+      }
+    }
+
+    // Add custom transforms to Jexl
+    if (config.tranforms) {
+      for (const transform in config.tranforms) {
+        jexl.addTransform(transform, config.tranforms[transform]);
+      }
+    }
+
+    // Add custom binary operators to Jexl
+    if (config.binaryOps) {
+      for (const operator in config.binaryOps) {
+        jexl.addBinaryOp(
+          operator,
+          config.binaryOps[operator].precedence,
+          config.binaryOps[operator].fn
+        );
+      }
+    }
   }
 
   // Abstract the creation of XML elements
