@@ -94,7 +94,18 @@ describe('Jexml', () => {
     }).convert(fixture);
     expect(xml).toContain('<FirstName id="1">John</FirstName>');
   });
-  it('should support conditional elements', () => {
+  it('should support inline conditional evaluation', () => {
+    const config = `
+    root: Record
+    elements:
+      CompanyMatch: "company.name == 'Acme Inc' ? company.name : ''"
+    `;
+    const xml = new Jexml({
+      templateString: config,
+    }).convert(fixture);
+    expect(xml).toContain('<CompanyMatch>Acme Inc</CompanyMatch>');
+  });
+  it('should support conditional elements with children nodes', () => {
     const config = `
     root: Record
     elements:
