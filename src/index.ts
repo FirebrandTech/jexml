@@ -111,6 +111,13 @@ export class Jexml {
       .join('');
   }
 
+  private parseConditional(node: Node, context: Context) {
+    const evaluated = jexl.evalSync(node.condition, context);
+    if (evaluated) {
+      return this.parseObject(node.elements, context);
+    }
+  }
+
   // Creates attribute string from map
   private buildAttributes(attributes: Primitive, context: Context) {
     return Object.keys(attributes)
@@ -139,6 +146,9 @@ export class Jexml {
             element,
             this.buildAttributes(node.attributes, context)
           );
+          // OBJECT WITH CONDITON
+        } else if (Object.keys(node).includes('condition')) {
+          return this.parseConditional(node, context);
           // OBJECT WITH VALUE
         } else {
           return this.parseObject(node, context);
