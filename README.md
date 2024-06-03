@@ -196,6 +196,75 @@ The output of the above YAML template will be:
 </Friends>
 ```
 
+### Custom Functions
+
+Custom functions can be defined and used in the template by passing them to the Jexml instance:
+
+```typescript
+const jexml = new Jexml({
+  templateString: config,
+  functions: {
+    concat: (...args) => args.join(''),
+  },
+});
+```
+
+Converting with the following template:
+
+```yaml
+elements:
+  FullName: concat(first_name, ' ', last_name)
+```
+
+Would output `<FullName>John Doe</FullName>`.
+
+## Custom Transforms
+
+Custom transforms can be defined and used in the template by passing them to the Jexml instance:
+
+```typescript
+const jexml = new Jexml({
+  templateString: config,
+  transforms: {
+    uppercase: (value) => value.toUpperCase(),
+  },
+});
+```
+
+Converting with the following template:
+
+```yaml
+elements:
+  FirstName: first_name|uppercase
+```
+
+Would output `<FirstName>JOHN</FirstName>`.
+
+## Custom Binary Operators
+
+Custom binary operators can be defined and used in the template by passing them to the Jexml instance:
+
+```typescript
+const jexml = new Jexml({
+  templateString: config,
+  binaryOperators: {
+    add: {
+      precedence: 1,
+      fn: (left, right) => left + right,
+    },
+  },
+});
+```
+
+Converting with the following template:
+
+```yaml
+elements:
+  Total: 1 add 2
+```
+
+Would output `<Total>3</Total>`.
+
 ## Development
 
 ### Install Dependencies
