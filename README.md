@@ -1,3 +1,5 @@
+[![Tests](https://github.com/FirebrandTech/jexml/actions/workflows/tests.yml/badge.svg)](https://github.com/FirebrandTech/jexml/actions/workflows/tests.yml)
+
 # Jexml
 
 Create XML output from JSON data using YAML templates.
