@@ -12,6 +12,8 @@ npm i @firebrandtech/jexml
 yarn add @firebrandtech/jexml
 ```
 
+---
+
 ## Usage
 
 ```typescript
@@ -54,7 +56,9 @@ readStream
   .pipe(writeStream);
 ```
 
-## Template Syntax
+---
+
+# Template Syntax
 
 **[Sample YAML Template](./tests/fixtures/sample.yml)**
 
@@ -68,7 +72,7 @@ which will output the generated XML to the console:
 yarn example
 ```
 
-### Basic Structure
+## Basic Structure
 
 ```yaml
 # Define the root element of the XML output
@@ -78,7 +82,7 @@ elements:
   SomeElement: value_reference
 ```
 
-### Variables
+## Variables
 
 Assume the following data structure from JSON:
 
@@ -131,7 +135,7 @@ elements:
   SomeElement: value(Some static value) # <SomeElement>Some static value</SomeElement>
 ```
 
-### Atrributes
+## Atrributes
 
 To define attributes of an element, use the following syntax:
 
@@ -149,7 +153,7 @@ The output of the aboved YAML template will be:
 <ContactInformation type="email">jsmith@email.com</ContactInformation>
 ```
 
-### Conditional Elements
+## Conditional Elements
 
 Jexml supports standard conditional logic using the Jexl syntax inline for elements, for example:
 
@@ -159,7 +163,7 @@ elements:
   Role: type === 'admin' ? 'Administrator' : 'User' # Ternary
 ```
 
-The output of the above YAML template will be:
+The output of the above Jexml template will be:
 
 ```xml
 <IsAdmin>true</IsAdmin>
@@ -177,7 +181,7 @@ elements:
       WriteAccess: true
 ```
 
-The output of the above YAML template will be:
+The output of the above template will be:
 
 ```xml
 <Permissions>
@@ -186,7 +190,7 @@ The output of the above YAML template will be:
 </Permissions>
 ```
 
-### Arrays
+## Arrays
 
 Jexml supports all Jexl array functions and methods for defining arrays of elements.
 
@@ -224,7 +228,7 @@ Friends[]:
     LastName: last_name
 ```
 
-The output of the above YAML template will be:
+The output of the above template will be:
 
 ```xml
 <Friends>
@@ -239,7 +243,7 @@ The output of the above YAML template will be:
 </Friends>
 ```
 
-### Custom Functions
+## Custom Functions
 
 Custom functions can be defined and used in the template by passing them to the Jexml instance:
 
@@ -308,15 +312,17 @@ elements:
 
 Would output `<Total>3</Total>`.
 
-## Development
+---
 
-### Install Dependencies
+# Development
+
+## Install Dependencies
 
 ```bash
 yarn
 ```
 
-### Run Tests
+## Run Tests
 
 ```bash
 yarn test
@@ -324,8 +330,9 @@ yarn test
 yarn test:watch
 ```
 
-### Build
+## Build
 
 ```bash
 yarn build
+yarn build:types
 ```
