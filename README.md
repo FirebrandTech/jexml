@@ -243,6 +243,33 @@ The output of the above template will be:
 </Friends>
 ```
 
+## Repeating Elements
+
+To define repeating elements, use the yaml array syntax, then specify elements
+of the array with standard methods supported by Jexml
+
+```yaml
+AddressPart:
+  - address.street # Referenced value
+  - value: address.state # Inline value
+    attributes:
+      city: address.city # Inline attribute
+  - elements:
+      Zip: address.zip # Nested element
+  - "address.zip == '55555' ? 'Somecity' : 'Unknown'" # Conditional element
+```
+
+The output of the above template will be:
+
+```xml
+<AddressPart>123 Main St</AddressPart>
+<AddressPart city="Anytown">CA</AddressPart>
+<AddressPart>
+  <Zip>55555</Zip>
+</AddressPart>
+<AddressPart>Unknown</AddressPart>
+```
+
 ## Custom Functions
 
 Custom functions can be defined and used in the template by passing them to the Jexml instance:

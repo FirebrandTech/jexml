@@ -27,6 +27,8 @@ interface Template {
   root: string;
   elements: Record<string, any>;
 }
+
+const NOWRAP = '<!NOWRAP>';
 export class Jexml {
   private template: Template;
   private formatSpacing: number | string;
@@ -70,7 +72,13 @@ export class Jexml {
   private createXMLElements(key: string, value: any, attributes?: any) {
     // Check if the key is an array indicator and remove it
     const elementKey = key.endsWith('[]') ? key.slice(0, -2) : key;
+    let noWrap = false;
     if (this.ignoreUndefined && value === undefined) return '';
+    if (value && typeof value === 'string' && value.startsWith(NOWRAP)) {
+      value = value.substr(NOWRAP.length);
+      noWrap = true;
+    }
+    if (noWrap) return value;
     return attributes
       ? `<${elementKey} ${attributes}>${value !== undefined ? value : ''}</${elementKey}>`
       : `<${elementKey}>${value}</${elementKey}>`;
@@ -101,14 +109,35 @@ export class Jexml {
   }
 
   // Get props to map array elements
-  private parseArray(node: Node, context: Context) {
+  private parseArray(key: string, node: Node | Node[], context: Context) {
+    // If the node is an array, map over it for repeating the key
+    if (Array.isArray(node)) {
+      return node
+        .map((item: any) => {
+          if (typeof item === 'object') {
+            if (Object.keys(item)[0] === 'elements') {
+              return this.createXMLElements(
+                key,
+                this.parseNode(key, item.elements, context)
+              );
+            }
+            return this.parseNode(key, item, context);
+          } else {
+            return this.createXMLElements(
+              key,
+              this.parseNode(key, item, context)
+            );
+          }
+        })
+        .join('');
+    }
+
+    // If the node is an object, map over the context to create nested arrays
     const { as, from, elements } = node;
     const array = context[from]; // Get data from the context
-    return array
-      .map((item: any) => {
-        return this.createXMLElements(as, this.parseObject(elements, item));
-      })
-      .join('');
+    return array.map((item: any) => {
+      return this.createXMLElements(as, this.parseObject(elements, item));
+    });
   }
 
   private parseConditional(node: Node, context: Context) {
@@ -128,9 +157,10 @@ export class Jexml {
   // Determine node type and parse accordingly
   private parseNode(key: string, node: any, context: Context) {
     if (typeof node === 'object') {
-      // ARRAY
-      if (key.endsWith('[]')) {
-        return this.parseArray(node, context);
+      // ARRAYS
+      if (key.endsWith('[]') || Array.isArray(node)) {
+        const res = this.parseArray(key, node, context);
+        return key.endsWith('[]') ? res : `${NOWRAP}${res}`;
       } else {
         // OBJECT WITH VALUE AND ATTRIBUTES
         if (

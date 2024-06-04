@@ -1,4 +1,6 @@
+import { Address } from 'cluster';
 import { Jexml } from '../src/index';
+import exp from 'constants';
 
 const fixture = {
   first_name: 'John',
@@ -13,6 +15,7 @@ const fixture = {
     city: 'Springfield',
     state: 'IL',
     zip: '62701',
+    faces: ['east', 'west'],
   },
   friends: [
     { first_name: 'Jane', last_name: 'Doe', age: 28 },
@@ -125,7 +128,7 @@ describe('Jexml', () => {
     expect(xml).toContain('<NameMatched>Acme Inc</NameMatched>');
     expect(xml).not.toContain('<CompanyNoMatch>');
   });
-  it('should support array elements', () => {
+  it('should support array elements nested', () => {
     const config = `
     root: Record
     elements:
@@ -143,6 +146,28 @@ describe('Jexml', () => {
     expect(xml).toContain('<Friends>');
     expect(xml).toContain('<FirstName>Jane</FirstName>');
     expect(xml).toContain('<LastName>Doe</LastName>');
+  });
+  it('should support spread arrays', () => {
+    const config = `
+    root: Record
+    elements:
+      AddressPart:
+        - address.street
+        - value: address.state
+          attributes:
+            city: address.city
+        - elements:
+            Zip: address.zip
+        - "address.zip == '62701' ? 'Springfield' : 'Unknown'"
+      `;
+    const xml = new Jexml({
+      templateString: config,
+      formatSpacing: 2,
+    }).convert(fixture);
+    expect(xml).toContain('<AddressPart>123 Main St</AddressPart>');
+    expect(xml).toContain('<AddressPart city="Springfield">IL</AddressPart>');
+    expect(xml).toContain('<Zip>62701</Zip>');
+    expect(xml).toContain('<AddressPart>Springfield</AddressPart>');
   });
   it('should support ability to add custom functions', () => {
     const config = `
