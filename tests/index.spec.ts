@@ -162,11 +162,15 @@ describe('Jexml', () => {
         - condition: address.zip == '62701'
           elements:
             IsSpringfield: value(true)
+        - condition: address.zip == '55555'
+          elements:
+            IsSpringfield: value(should not be here)
       `;
     const xml = new Jexml({
       templateString: config,
       formatSpacing: 2,
     }).convert(fixture);
+    console.log(xml);
     expect(xml).toContain('<AddressPart>123 Main St</AddressPart>');
     expect(xml).toContain('<AddressPart city="Springfield">IL</AddressPart>');
     expect(xml).toContain('<Zip>62701</Zip>');
