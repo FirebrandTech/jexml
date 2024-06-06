@@ -128,7 +128,7 @@ describe('Jexml', () => {
     expect(xml).toContain('<NameMatched>Acme Inc</NameMatched>');
     expect(xml).not.toContain('<CompanyNoMatch>');
   });
-  it.only('should support array elements nested', () => {
+  it('should support array elements nested', () => {
     const config = `
     root: Record
     elements:
