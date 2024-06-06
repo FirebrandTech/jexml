@@ -171,6 +171,7 @@ describe('Jexml', () => {
     expect(xml).toContain('<AddressPart city="Springfield">IL</AddressPart>');
     expect(xml).toContain('<Zip>62701</Zip>');
     expect(xml).toContain('<AddressPart>Springfield</AddressPart>');
+    expect(xml).toContain('<IsSpringfield>true</IsSpringfield>');
   });
   it('should support ability to add custom functions', () => {
     const config = `
