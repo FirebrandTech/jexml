@@ -256,7 +256,10 @@ AddressPart:
       city: address.city # Inline attribute
   - elements:
       Zip: address.zip # Nested element
-  - "address.zip == '55555' ? 'Somecity' : 'Unknown'" # Conditional element
+  - "address.zip == '55555' ? 'Somecity' : 'Unknown'" # Inline conditional element
+  - condition: address.zip === '55555' # Conditional elements nested
+    elements:
+      Is55555Zip: value(true)
 ```
 
 The output of the above template will be:
@@ -268,6 +271,9 @@ The output of the above template will be:
   <Zip>55555</Zip>
 </AddressPart>
 <AddressPart>Unknown</AddressPart>
+<AddressPart>
+  <Is55555Zip>true</Is55555Zip>
+</AddressPart>
 ```
 
 ## Custom Functions
