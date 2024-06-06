@@ -128,7 +128,7 @@ describe('Jexml', () => {
     expect(xml).toContain('<NameMatched>Acme Inc</NameMatched>');
     expect(xml).not.toContain('<CompanyNoMatch>');
   });
-  it('should support array elements nested', () => {
+  it.only('should support array elements nested', () => {
     const config = `
     root: Record
     elements:
@@ -143,6 +143,7 @@ describe('Jexml', () => {
       templateString: config,
       formatSpacing: 2,
     }).convert(fixture);
+    console.log(xml);
     expect(xml).toContain('<Friends>');
     expect(xml).toContain('<FirstName>Jane</FirstName>');
     expect(xml).toContain('<LastName>Doe</LastName>');
@@ -170,7 +171,6 @@ describe('Jexml', () => {
       templateString: config,
       formatSpacing: 2,
     }).convert(fixture);
-    console.log(xml);
     expect(xml).toContain('<AddressPart>123 Main St</AddressPart>');
     expect(xml).toContain('<AddressPart city="Springfield">IL</AddressPart>');
     expect(xml).toContain('<Zip>62701</Zip>');

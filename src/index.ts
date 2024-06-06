@@ -141,9 +141,11 @@ export class Jexml {
     // If the node is an object, map over the context to create nested arrays
     const { as, from, elements } = node;
     const array = context[from]; // Get data from the context
-    return array.map((item: any) => {
-      return this.createXMLElements(as, this.parseObject(elements, item));
-    });
+    return array
+      .map((item: any) => {
+        return this.createXMLElements(as, this.parseObject(elements, item));
+      })
+      .join('');
   }
 
   private parseConditional(node: Node, context: Context) {
