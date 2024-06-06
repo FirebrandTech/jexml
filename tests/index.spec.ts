@@ -159,6 +159,9 @@ describe('Jexml', () => {
         - elements:
             Zip: address.zip
         - "address.zip == '62701' ? 'Springfield' : 'Unknown'"
+        - condition: address.zip == '62701'
+          elements:
+            IsSpringfield: value(true)
       `;
     const xml = new Jexml({
       templateString: config,

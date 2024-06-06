@@ -115,7 +115,8 @@ export class Jexml {
       return node
         .map((item: any) => {
           if (typeof item === 'object') {
-            if (Object.keys(item)[0] === 'elements') {
+            const keys = Object.keys(item);
+            if (keys.includes('elements')) {
               return this.createXMLElements(
                 key,
                 this.parseNode(key, item.elements, context)
