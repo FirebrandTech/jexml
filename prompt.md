@@ -10,7 +10,9 @@ Jexml relies on the Jexl library located in the [Jexl Github Repository](https:/
 
 ## Initializing the Jexml Library
 
-To inidiialize the Jexml library, you can use the following code:
+### Basic Usage
+
+To use the Jexml library, you need to initialize an instance of the `Jexml` class. The initialization requires either a `templatePath` as a file path to the YAML template file, or a string version specified by `templateString`, that defines how the JSON data should be converted to XML.
 
 ```typescript
 import { Jexml } from '@firebrandtech/jexml';
@@ -20,6 +22,58 @@ const jexml = new Jexml({ templatePath: 'path/to/template.yaml' });
 
 // Convert JSON data to XML
 jexml.convert(/* JSON data */); // Outputs XML
+```
+
+### Additional Options
+
+Additional options can be passed to the Jexml instance to include objects that define custom `functions`, `transforms`, and `binaryOperator`s to further manipulate the data.
+
+```typescript
+import { Jexml } from '@firebrandtech/jexml';
+import { readFileSync } from 'fs';
+
+// Read the YAML template from a file
+const yamlTemplate = readFileSync('path/to/template.yaml', 'utf8');
+
+// Initialize the Jexml instance with custom functions, transforms, and binary operators
+const jexml = new Jexml({
+  templateString: yamlTemplate,
+  functions: {
+    concat: (a, b) => a + b, // Custom function to concatenate strings
+  },
+  transforms: {
+    uppercase: (val) => val.toUpperCase(), // Custom transform to convert a string to uppercase
+  },
+  binaryOperators: {
+    in: {
+      precedence: 10,
+      fn: (a, b) => b.includes(a), // Custom binary operator to check if a value is in a list
+    },
+  },
+});
+```
+
+### Streams
+
+Jexml also supports streaming data to the XML output. The `stream` method returns a `Transform` stream that can be piped to a `Writable` stream.
+
+```typescript
+import { Jexml } from '@firebrandtech/jexml';
+import { createReadStream, createWriteStream } from 'fs';
+
+const jexml = new Jexml({ templatePath: 'path/to/template.yaml' });
+
+const readStream = createReadStream('path/to/data.json');
+const writeStream = createWriteStream('path/to/output.xml');
+
+readStream
+  .pipe(
+    jexml.stream({
+      documentOpen: '<People>', // or array: ['<?xml version="1.0" encoding="UTF-8" ?>', '<People>']
+      documentClose: '</People>', // or array: ['</People>']
+    })
+  )
+  .pipe(writeStream);
 ```
 
 ## XML Output
@@ -55,6 +109,9 @@ For example below is an example of the XML output:
     <LicenseNumber>00123456890</LicenseNumber>
     <DOB>Not Provided</DOB>
   </Identifiers>
+  <IsCustomer>
+    <CustomerId>000123</CustomerId>
+  </IsCustomer>
 </Person>
 ```
 
@@ -67,6 +124,11 @@ The JSON data this comes from looks like the following:
   "id": "012345",
   "first_name": "John",
   "last_name": "Smith",
+  "company": {
+    "name": "Acme, Inc.",
+    "type": "Customer",
+    "id": "000123"
+  },
   "address": {
     "street": "123 Main",
     "city": "Anytown",
@@ -109,7 +171,8 @@ elements:
   ID: id
   FirstName: first_name
   LastName: last_name
-  FullName: first_name last_name
+  # Using Jexl notation to concatenate values
+  FullName: first_name + " " + last_name
   # To use an attribute, use the key name followed by a colon and then the key name of the value in the JSON data with and object containing the attribute name and the key name of the value in the JSON data
   Contact:
     value: contact.value
@@ -133,9 +196,15 @@ elements:
     LicenseNumber: identifiers.license
     # Conditional values use the Jexl syntax
     DOB: identifiers.dob ? identifiers.dob : value(Not Provided)
+  # Conditional elements can be defined using Jexl syntax
+  IsCustomer:
+    condition: company.type == 'Customer'
+    elements:
+      CustomerId: company.id
+
 ```
 
-## Jexl Library Methods
+## Jexl Library Functions, Transforms, and Binary Operators
 
 Additionally, since Jexml uses the Jexl library to parse the data it can use custom functions, transforms, and binary operators to further manipulate the data. These can be built in Typescript and are loaded when the Jexl instance is created.
 
