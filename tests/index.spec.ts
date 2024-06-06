@@ -1,6 +1,4 @@
-import { Address } from 'cluster';
 import { Jexml } from '../src/index';
-import exp from 'constants';
 
 const fixture = {
   first_name: 'John',
