@@ -26,6 +26,8 @@ type Node = Record<string, any>;
 interface Template {
   root: string;
   elements: Record<string, any>;
+  condition?: string;
+  attributes?: Record<string, string>;
 }
 
 const NOWRAP = '<!NOWRAP>';
@@ -65,6 +67,40 @@ export class Jexml {
           config.binaryOps[operator].fn
         );
       }
+    }
+    this.compileTemplate(this.template);
+  }
+
+  private compileTemplate(template: Template) {
+    if (typeof template === 'object' && template.condition) {
+      jexl.compile(template.condition);
+    }
+    if (typeof template === 'object' && template.attributes) {
+      Object.keys(template.attributes).forEach((attr) => {
+        jexl.compile(template.attributes[attr]);
+      });
+    }
+    if (typeof template === 'object' && template.elements) {
+      Object.keys(template.elements).forEach((element) => {
+        if (Array.isArray(template.elements[element])) {
+          template.elements[element].forEach((item: any) => {
+            this.compileTemplate(item);
+          });
+        } else if (template.elements[element] instanceof Object) {
+          if (template.elements[element].elements) {
+            // Nested elements object, recurse
+            this.compileTemplate(template.elements[element]);
+          } else if (template.elements[element].value) {
+            // Value element for attributes-supplied values
+            jexl.compile(template.elements[element].value);
+          }
+        } else {
+          if (template.elements[element].startsWith('value(')) {
+            return;
+          }
+          jexl.compile(template.elements[element]);
+        }
+      });
     }
   }
 
