@@ -40,7 +40,7 @@ export class Jexml {
     const tmpl = config.templatePath
       ? fs.readFileSync(config.templatePath, 'utf8')
       : config.templateString;
-    this.template = parse(tmpl);
+    const template = parse(tmpl);
     this.formatSpacing = config.formatSpacing;
     this.ignoreUndefined = config.ignoreUndefined === true ? false : true;
 
@@ -68,7 +68,7 @@ export class Jexml {
         );
       }
     }
-    this.compileTemplate(this.template);
+    this.template = this.compileTemplate(template);
   }
 
   private compileTemplate(template: Template) {
@@ -102,6 +102,8 @@ export class Jexml {
         }
       });
     }
+
+    return template;
   }
 
   // Abstract the creation of XML elements
