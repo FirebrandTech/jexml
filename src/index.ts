@@ -102,7 +102,6 @@ export class Jexml {
         }
       });
     }
-
     return template;
   }
 
