@@ -141,7 +141,6 @@ describe('Jexml', () => {
       templateString: config,
       formatSpacing: 2,
     }).convert(fixture);
-    console.log(xml);
     expect(xml).toContain('<Friends>');
     expect(xml).toContain('<FirstName>Jane</FirstName>');
     expect(xml).toContain('<LastName>Doe</LastName>');
