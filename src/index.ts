@@ -239,6 +239,10 @@ export class Jexml {
   private parseObject(node: Node, context: Context) {
     let xml = '';
     for (let key in node) {
+      if (key === '$[]') {
+        xml += this.parseArray(key, node[key], context);
+        continue;
+      }
       xml += this.createXMLElements(
         key,
         this.parseNode(key, node[key], context)

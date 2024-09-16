@@ -145,6 +145,25 @@ describe('Jexml', () => {
     expect(xml).toContain('<FirstName>Jane</FirstName>');
     expect(xml).toContain('<LastName>Doe</LastName>');
   });
+  it('should support arrays with no wrapping element', () => {
+    const config = `
+    root: Record
+    elements:
+      $[]:
+        as: Friend
+        from: friends
+        elements:
+          FirstName: first_name
+          LastName: last_name
+    `;
+    const xml = new Jexml({
+      templateString: config,
+      formatSpacing: 2,
+    }).convert(fixture);
+    expect(!xml.includes('<$>')).toBeTruthy();
+    expect(xml).toContain('<FirstName>Jane</FirstName>');
+    expect(xml).toContain('<LastName>Doe</LastName>');
+  });
   it('should support spread arrays', () => {
     const config = `
     root: Record
