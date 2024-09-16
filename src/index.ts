@@ -5,9 +5,14 @@ import { Transform, TransformCallback } from 'stream';
 
 type Primitive = boolean | number | string | undefined;
 
+type TemplateDesignators =
+  | { templateString: string }
+  | { templatePath: string };
+
 type Config = {
   templatePath?: string;
   templateString?: string;
+  imports?: Record<string, TemplateDesignators>;
   formatSpacing?: number | string;
   ignoreUndefined?: boolean;
   tranforms?: Record<string, (value: any, ...args: any[]) => any>;
@@ -35,14 +40,43 @@ export class Jexml {
   private template: Template;
   private formatSpacing: number | string;
   private ignoreUndefined: boolean;
+  private imports: Record<string, TemplateDesignators>;
 
   constructor(config: Config) {
     const tmpl = config.templatePath
       ? fs.readFileSync(config.templatePath, 'utf8')
       : config.templateString;
     const template = parse(tmpl);
+    this.imports = config.imports;
     this.formatSpacing = config.formatSpacing;
     this.ignoreUndefined = config.ignoreUndefined === true ? false : true;
+
+    // Recursively build the template with any imports
+    const importTemplates = (obj: any) => {
+      return Object.keys(obj).reduce((acc, key) => {
+        if (Array.isArray(obj[key])) {
+          acc[key] = obj[key].map((item: any) =>
+            typeof item === 'object' ? importTemplates(item) : item
+          );
+        } else if (typeof obj[key] === 'object') {
+          acc[key] = importTemplates(obj[key]);
+        } else {
+          if (key === '$import') {
+            const importTemplate = this.imports[obj[key]];
+            const importContent =
+              'templateString' in importTemplate
+                ? importTemplate.templateString
+                : fs.readFileSync(importTemplate.templatePath, 'utf8');
+            acc = { ...acc, ...parse(importContent) };
+          } else {
+            acc[key] = obj[key];
+          }
+        }
+        return acc;
+      }, {});
+    };
+
+    template.elements = importTemplates(template.elements);
 
     // Add custom functions to Jexl
     if (config.functions) {
@@ -102,6 +136,7 @@ export class Jexml {
         }
       });
     }
+
     return template;
   }
 

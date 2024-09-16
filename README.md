@@ -243,6 +243,29 @@ The output of the above template will be:
 </Friends>
 ```
 
+To omit the encapsulating `<Friends>` element, use the following `$[]` syntax:
+
+```yaml
+$[]:
+  from: friends
+  elements:
+    FirstName: first_name
+    LastName: last_name
+```
+
+The output of the above template will be:
+
+```xml
+<Friend>
+  <FirstName>John</FirstName>
+  <LastName>Doe</LastName>
+</Friend>
+<Friend>
+  <FirstName>Jane</FirstName>
+  <LastName>Smith</LastName>
+</Friend>
+```
+
 ## Repeating Elements
 
 To define repeating elements, use the yaml array syntax, then specify elements
@@ -275,6 +298,31 @@ The output of the above template will be:
   <Is55555Zip>true</Is55555Zip>
 </AddressPart>
 ```
+
+## Imports and Extending Templates
+
+Jexml supports importing and extending templates using the `$import` key. For example you can instantiate a Jexml instance with a template that imports another template:
+
+```typescript
+const jexml = new Jexml({
+  templatePath: 'path/to/template.yaml',
+  imports: {
+    fooImport: {
+      templatePath: 'path/to/foo.yaml',
+      // ...or...
+      templateString: 'YAML TEMPLATE STRING',
+    },
+  },
+});
+```
+
+Then in your template you can import the `foo` template using the following syntax:
+
+```yaml
+$import: fooImport
+```
+
+This will then merge the `fooImport` template into the current template.
 
 ## Custom Functions
 

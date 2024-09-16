@@ -50,6 +50,36 @@ describe('Jexml', () => {
     expect(xml).toContain('<FirstName>John</FirstName>');
     expect(xml).toContain('<LastName>Doe</LastName>');
   });
+  it('should support extending by importing other templates', () => {
+    const testImport = `
+    ImportedFullName: first_name + " " + last_name
+    ImportedFriends[]:
+      as: ImportedFriend
+      from: friends
+      elements:
+        ImportedFriendFirstName: first_name
+        ImportedFriendLastName: last_name
+    `;
+    const config = `
+    root: Record
+    elements:
+      FirstName: first_name
+      LastName: last_name
+      $import: test
+    `;
+    const xml = new Jexml({
+      templateString: config,
+      imports: {
+        test: {
+          templateString: testImport,
+        },
+      },
+    }).convert(fixture);
+    expect(xml).toContain('<ImportedFullName>John Doe</ImportedFullName>');
+    expect(xml).toContain(
+      '<ImportedFriend><ImportedFriendFirstName>Jane</ImportedFriendFirstName>'
+    );
+  });
   it('should support string interpolation', () => {
     const config = `
     root: Record
@@ -147,14 +177,14 @@ describe('Jexml', () => {
   });
   it('should support arrays with no wrapping element', () => {
     const config = `
-    root: Record
+root: Record
+elements:
+  $[]:
+    as: Friend
+    from: friends
     elements:
-      $[]:
-        as: Friend
-        from: friends
-        elements:
-          FirstName: first_name
-          LastName: last_name
+      FirstName: first_name
+      LastName: last_name
     `;
     const xml = new Jexml({
       templateString: config,
