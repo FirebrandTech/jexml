@@ -61,7 +61,7 @@ export class Jexml {
         } else if (typeof obj[key] === 'object') {
           acc[key] = importTemplates(obj[key]);
         } else {
-          if (key === '$import') {
+          if (key.startsWith('$import')) {
             const importTemplate = this.imports[obj[key]];
             const importContent =
               'templateString' in importTemplate

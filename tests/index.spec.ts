@@ -65,7 +65,7 @@ describe('Jexml', () => {
     elements:
       FirstName: first_name
       LastName: last_name
-      $import: test
+      $import.test: test
     `;
     const xml = new Jexml({
       templateString: config,

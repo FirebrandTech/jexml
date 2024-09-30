@@ -319,7 +319,14 @@ const jexml = new Jexml({
 Then in your template you can import the `foo` template using the following syntax:
 
 ```yaml
-$import: fooImport
+$import.foo: fooImport
+```
+
+If you have multiple imports on the same level you will need to have unique key names so you can use the `$import` key with a `.` followed by a string to create unique keys to import multiple templates:
+
+```yaml
+$import.foo: fooImport
+$import.bar: barImport
 ```
 
 This will then merge the `fooImport` template into the current template.
